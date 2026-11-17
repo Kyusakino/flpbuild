@@ -1,0 +1,4 @@
+# Optional dependencies for audio analysis (tools/check_audio.py).
+# The FLP tools only need the Python standard library.
+numpy
+soundfile
