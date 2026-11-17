@@ -8,7 +8,7 @@ clips); `flpbuild` writes a real `.flp` that FL Studio can open. The other
 scripts validate projects and audio, and extract objective metrics.
 
 - No third-party dependencies for the FLP tools (Python standard library only).
-- **No bundled `.flp` templates**: pass `--template` with a project you created.
+- Includes `templates/official-empty.flp`, an empty FL Studio project to start from.
 - `check_audio.py` optionally uses `numpy` / `soundfile` for audio analysis.
 - Built against **FL Studio 2026 (26.1.7)**, PPQ 96, `.flp` event-stream format.
 
@@ -21,9 +21,10 @@ scripts validate projects and audio, and extract objective metrics.
 git clone https://github.com/Kyusakino/flpbuild.git
 cd flpbuild
 
-# 0) flpbuild needs an FL Studio project to use as a template.
-#    Create one in FL Studio (empty project with the channels/instruments you
-#    want), save it, then pass it with --template.
+# 0) Start from the bundled empty FL Studio project:
+#    open templates/official-empty.flp in FL Studio, add the instruments/
+#    channels and pattern slots you want, save your own template, then pass it
+#    with --template. (official-empty itself has no patterns yet.)
 #
 # 1) JSON arrangement -> FLP + MIDI
 python3 tools/flpbuild.py \
@@ -80,23 +81,18 @@ Coordinates:
 tempo. It does **not** program instruments, mixer tracks, or effect plugins:
 those come from the template.
 
-## Templates (not shipped)
+## Templates
 
-`flpbuild` writes into an existing project; it does not create instruments or
-plugins from scratch. Provide a template:
+`templates/official-empty.flp` is an empty project saved by FL Studio (no
+notes, no patterns, one empty channel slot). Open it in FL Studio, add the
+instruments / effects and pattern slots you want, then save it as your own
+`.flp` and pass it with `--template`.
 
-1. Open FL Studio, start a new project.
-2. Add the channels/instruments and (optionally) effect chains you want.
-3. Save the project as `.flp` (e.g. `my-template.flp`).
-4. Pass it to `flpbuild --template my-template.flp`.
-
-The writer keeps the template's channels, plugin state, mixer state and pattern
-slots, then replaces notes, pattern names, playlist clips, channel names and
-tempo. `patterns[].channel` refers to the template's channel order (0-based).
-
-**No `.flp` templates are redistributed in this repository** — FL Studio
-project files belong to their creators. The templates used internally
-(11 native channels, and a 16-channel variant with BBCSO) are not included.
+`flpbuild` needs a template that already contains **at least one pattern slot**
+(draw something in the piano roll, or create patterns in FL Studio, then save).
+It keeps the template's channels, plugin state, mixer state and pattern slots,
+then replaces notes, pattern names, playlist clips, channel names and tempo.
+`patterns[].channel` refers to the template's channel order (0-based).
 
 ## Tools
 
@@ -109,9 +105,6 @@ project files belong to their creators. The templates used internally
 | `tools/metrics.py` | Objective metrics: note/pattern/channel counts, density, polyphony, pitch, velocity, structure curve |
 
 Run any script with `--help` for details.
-
-Competition-operations tooling (round timers, scoreboards, anonymization,
-submission metadata checks) is intentionally **not** included in this repository.
 
 ## FLP format notes (FL Studio 2026, 26.1.7)
 
@@ -145,7 +138,7 @@ tests are skipped when no local template is present.
 
 ## Limitations
 
-- Requires a template project; no bundled `.flp` files.
+- Requires a template project with at least one pattern slot (a starting empty project is included).
 - No mixer / effect / automation writing (see template note above).
 - No audio rendering; use FL Studio or an external renderer.
 - No MIDI import; MIDI export only (`--midi`).
